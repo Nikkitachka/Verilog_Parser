@@ -84,6 +84,7 @@ class SVParParser:
         self.inhr_params_dxs = []
         self.inhr_params_rfs = []
 
+    #############################################################################################################################
 
     def parse(self):
         with open(self.filepath, "r") as input_file:
@@ -124,6 +125,7 @@ class SVParParser:
                                 self.inhr_params_rfs.append(inher_param_ref)
                                 line_idxs.append(line_idx)
 
+    #############################################################################################################################
 
     def get_param_ind(self, param_str: str):
         """
@@ -146,6 +148,7 @@ class SVParParser:
             param_ind = [1]
         return param_ind
 
+    #############################################################################################################################
 
     def convert_param_ind(self, param_ind):
         """
@@ -171,6 +174,7 @@ class SVParParser:
                 pass
         return param_ind
 
+    #############################################################################################################################
 
     def get_param_val(self, param_str: str, param_dim: list):
         """
@@ -202,60 +206,8 @@ class SVParParser:
                 param_val[value_part_cnt] = param_val[value_part_cnt].split(',')
         return param_val
 
-
-    def parse_log(self):
-        print("\nSVParParser log:\n")
-        def_head_params_str = '{} header defined parameter(s) was(were) founded:\n'
-        def_code_params_str = '{} code defined parameter(s) was(were) founded:\n'
-        inh_params_str      = '{} inherited parameter(s) was(were) founded:\n'
-
-        ####
-
-        print(def_head_params_str.format(str(len(self.head_params_nms))))
-
-        data_def_head_params = {'name':           self.head_params_nms,
-                                'dimension':      self.head_params_dms,
-                                'default values': self.head_params_vls}
-
-        table_def_head_params = pd.DataFrame(data_def_head_params)
-        print(tabulate(table_def_head_params, headers='keys', tablefmt='fancy_grid', stralign='center', numalign="center"))
-
-        ####
-
-        print(def_code_params_str.format(str(len(self.code_params_nms))))
-
-        data_def_code_params = {'name':           self.code_params_nms,
-                                'dimension':      self.code_params_dms,
-                                'default values': self.code_params_vls}
-
-        table_def_code_params = pd.DataFrame(data_def_code_params)
-        print(tabulate(table_def_code_params, headers='keys', tablefmt='fancy_grid', stralign='center', numalign="center"))
-
-        ####
-
-        print(inh_params_str.format(str(len(self.inhr_params_nms))))
-
-        data_inh_params = {'name':           self.inhr_params_nms,
-                           'dimension':      self.inhr_params_rfs,
-                           'default values': self.inhr_params_dxs}
-
-        table_inh_params = pd.DataFrame(data_inh_params)
-        print(tabulate(table_inh_params, headers='keys', tablefmt='fancy_grid', stralign='center', numalign="center"))
-
-
-    # def parse_log(self):
-    #     print("\nSVParParser log:\n")
-    #     def_head_params_str = '{} header defined parameter(s) was(were) founded; their names, dimensions and default values:\n'
-    #     def_code_params_str = '{} code defined parameter(s) was(were) founded; their names, dimensions and default values:\n'
-    #     inh_params_str = '{} inherited parameter(s) was(were) founded; their names, references and indexes:\n'
-    #     print(def_head_params_str.format(str(len(self.head_params_nms))))
-    #     print(self.head_params_nms, "\n", self.head_params_dms, "\n", self.head_params_vls, "\n")
-    #     print(def_code_params_str.format(str(len(self.code_params_nms))))
-    #     print(self.code_params_nms, "\n", self.code_params_dms, "\n", self.code_params_vls, "\n")
-    #     print(inh_params_str.format(str(len(self.inhr_params_nms))))
-    #     print(self.inhr_params_nms, "\n", self.inhr_params_rfs, "\n", self.inhr_params_dxs, "\n")
-
-
+    #############################################################################################################################
+    # txt file output
 
     def parse_file_log(self):
         with io.open("parser_log.txt", "w", encoding="utf-16") as f:
@@ -291,66 +243,19 @@ class SVParParser:
             f.write(inh_params_str.format(str(len(self.inhr_params_nms))))
 
             data_inh_params = {'name':           self.inhr_params_nms,
-                            'dimension':      self.inhr_params_rfs,
-                            'default values': self.inhr_params_dxs}
+                               'dimension':      self.inhr_params_rfs,
+                               'default values': self.inhr_params_dxs}
 
             table_inh_params = pd.DataFrame(data_inh_params)
             f.write(str(tabulate(table_inh_params, headers='keys', tablefmt='fancy_grid', stralign='center', numalign="center")) + '\n')
+
             f.close()
             if f.closed:
                 print('file is closed')
 
-            
-    
-        # f.write(str(def_head_params_str.format(str(len(self.head_params_nms)))))
-        # f.write(' '.join(''.join(map(str,l)) for l in self.head_params_nms))
-        # f.write('\n')
-        # f.write(' '.join(''.join(map(str,l)) for l in self.head_params_dms))
-        # f.write('\n')
-        # f.write(' '.join(''.join(map(str,l)) for l in self.head_params_vls))
-        # f.write('\n')
-        # f.write(str(def_code_params_str.format(str(len(self.code_params_nms)))))
-        # f.write(' '.join(''.join(map(str,l)) for l in self.code_params_nms))
-        # f.write('\n')
-        # f.write(' '.join(''.join(map(str,l)) for l in self.code_params_dms))
-        # f.write('\n')
-        # f.write(' '.join(''.join(map(str,l)) for l in self.code_params_vls))
-        # f.write('\n')
-        # f.write(str(inh_params_str.format(str(len(self.inhr_params_nms)))))
-        # f.write(' '.join(''.join(map(str,l)) for l in self.inhr_params_nms))
-        # f.write('\n')
-        # f.write(' '.join(''.join(map(str,l)) for l in self.inhr_params_rfs))
-        # f.write('\n')
-        # f.write(' '.join(''.join(map(str,l)) for l in self.inhr_params_dxs))
-        # f.write('\n')
-
-    # def parse_file_log(self):
-    #     f = open('parser_log.txt', 'w')
-    #     f.write("\nSVParParser log:\n")
-    #     def_head_params_str = '{} header defined parameter(s) was(were) founded; their names, dimensions and default values:\n'
-    #     def_code_params_str = '{} code defined parameter(s) was(were) founded; their names, dimensions and default values:\n'
-    #     inh_params_str      = '{} inherited parameter(s) was(were) founded; their names, references and indexes:\n'
-    #     f.write(str(def_head_params_str.format(str(len(self.head_params_nms)))))
-    #     f.write(' '.join(''.join(map(str,l)) for l in self.head_params_nms))
-    #     f.write('\n')
-    #     f.write(' '.join(''.join(map(str,l)) for l in self.head_params_dms))
-    #     f.write('\n')
-    #     f.write(' '.join(''.join(map(str,l)) for l in self.head_params_vls))
-    #     f.write('\n')
-    #     f.write(str(def_code_params_str.format(str(len(self.code_params_nms)))))
-    #     f.write(' '.join(''.join(map(str,l)) for l in self.code_params_nms))
-    #     f.write('\n')
-    #     f.write(' '.join(''.join(map(str,l)) for l in self.code_params_dms))
-    #     f.write('\n')
-    #     f.write(' '.join(''.join(map(str,l)) for l in self.code_params_vls))
-    #     f.write('\n')
-    #     f.write(str(inh_params_str.format(str(len(self.inhr_params_nms)))))
-    #     f.write(' '.join(''.join(map(str,l)) for l in self.inhr_params_nms))
-    #     f.write('\n')
-    #     f.write(' '.join(''.join(map(str,l)) for l in self.inhr_params_rfs))
-    #     f.write('\n')
-    #     f.write(' '.join(''.join(map(str,l)) for l in self.inhr_params_dxs))
-    #     f.write('\n')
-    #     f.close()
-    #     if f.closed:
-    #         print('file is closed')
+        with io.open("parser_log.txt", "r", encoding="utf-16") as f:
+            print(f.read())
+            f.close()
+            if f.closed:
+                print('file is closed')
+    #############################################################################################################################
