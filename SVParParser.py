@@ -97,7 +97,7 @@ class SVParParser:
                 signal_type = ["input",  "output"]                                                                  # типы сишналов (входные / выходные)
                 for st in signal_type:
                     if( st in line):
-                        self.head_signal_typ = st
+                        self.head_signal_typ.append(st)
                         print(st)
                         signal_str_default = re.search('(.*)\n', line).group(1)                                     # захват всей строки в signal_str
                         signal_str         = signal_str_default
@@ -131,7 +131,15 @@ class SVParParser:
                         print(self.head_signal_n_r)
                         print(signal_str)
 
+                        # signal_name = (re.search(r'\](.*)\[', (re.search(r'\](.*)\[', signal_str).group(1))).group(1))
+                        # signal_name = (re.search(r'\](.*)\[', (re.search(r'\](.*)\[', signal_str).group(1))).group(1))
+                        # if signal_name is None:
+                        #     return None
+                        # print(signal_name)
+
+                        
                         signal_vector_width  = self.get_param_ind(signal_str)                                       # извлечение ширины (измерения) параметра
+                        self.head_signal_v_w.append(signal_vector_width) 
                         print(signal_vector_width)
             #            param_val  = self.get_param_val(signal_str_default, signal_vector_width)                   # извлечение начального значения (для in/out в head их нет)
                         signal_name = signal_str.split('[', 1)[0]                                                   # обрезание ширины параметра (остаётся только имя)
@@ -214,15 +222,14 @@ class SVParParser:
         """
 
         if('[' in param_str):
-            # param_ind = (re.search(r"\[(.*)\]", param_str).group(1))
-            param_ind = re.search(r"\[(.*)\]", param_str)
-            print(param_ind)
-        #     if('[' in param_ind):
-        #         param_xind = self.convert_param_ind(param_ind.split(']', 1)[0] )
-        #         param_yind = self.convert_param_ind(param_ind.split('[', 1)[-1])
-        #         param_ind = [param_xind, param_yind]
-        #     else:
-        #         param_ind = [self.convert_param_ind(param_ind)]
+            if  (re.search(r"\][^\[](.*)", param_str) and re.search(r"(.*)[^\]]\[", param_str)):
+                param_ind = (re.match(r"\[(.*)\][^\[]", param_str).group(1))
+                param_ind = '[' + param_ind + ']'
+                print(param_ind)
+            elif(re.search(r"\][^\[](.*)", param_str)):
+                param_ind = (re.match(r"\[(.*)\]", param_str).group(0))
+            else:
+                param_ind = [1]
         else:
             param_ind = [1]
         return param_ind
