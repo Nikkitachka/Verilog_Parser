@@ -4,9 +4,9 @@
 import SVParParser as svpp
 
 parser = svpp.SVParParser("test_module_1.sv")
-parser.parse()
+parser.head_parse()
 # parser.parse_log()
-parser.parse_file_log()
-parser = svpp.SVParParser("test_module_2.sv")
-parser.parse()
-# parser.parse_log()clear
+# parser.parse_file_log()
+# parser = svpp.SVParParser("test_module_2.sv")
+# parser.parse()
+# parser.parse_log()
