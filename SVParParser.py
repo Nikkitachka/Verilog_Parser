@@ -97,7 +97,6 @@ class SVParParser:
                 for st in signal_type:
                     if( st in line):
                         self.head_signal_typ.append(st)
-                        print(st)
                         signal_str_default = re.search('(.*)\n', line).group(1)                                     # захват всей строки в signal_str
                         signal_str         = signal_str_default
                         print(signal_str_default)
@@ -117,7 +116,6 @@ class SVParParser:
                                 signal_str = re.search(dt + '(.*)', signal_str).group(1)
                                 print(signal_data_type)
                         print(self.head_signal_d_t)
-                        print(signal_str)
 
                         num_representation = ["signed", "unsigned"]                                                 # представление чисел (знак / беззнак)
                         self.head_signal_n_r.append('')                                                             # поиск представления чисел
@@ -128,7 +126,6 @@ class SVParParser:
                                 signal_str = re.search(nr + '(.*)', signal_str).group(1)
                                 print(signal_num_representation)
                         print(self.head_signal_n_r)
-                        print(signal_str)
 
                         # signal_name = (re.search(r'\](.*)\[', (re.search(r'\](.*)\[', signal_str).group(1))).group(1))
                         # signal_name = (re.search(r'\](.*)\[', (re.search(r'\](.*)\[', signal_str).group(1))).group(1))
@@ -136,26 +133,29 @@ class SVParParser:
                         #     return None
                         # print(signal_name)
 
-                        signal_vector_width, flag  = self.get_signal_v_w(signal_str)                                # извлечение ширины (измерения) сигнала
+                        signal_vector_width, flag_v_m  = self.get_signal_v_w(signal_str)                                # извлечение ширины (измерения) сигнала
                         self.head_signal_v_w.append(signal_vector_width)
                         print(signal_vector_width)
 
-                        if (flag):
+                        if (flag_v_m):
                             signal_str = signal_str.replace(signal_vector_width, '', 1)
-                        print(signal_str)
 
-                        signal_array_size  = self.get_signal_arr(signal_str)                                        # извлечение размера массива сигнала
+                        signal_array_size, flag_arr  = self.get_signal_arr(signal_str)                                        # извлечение размера массива сигнала
                         self.head_signal_arr.append(signal_array_size)
                         print(signal_array_size)
+                        
+                        if (flag_arr):
+                            signal_str = signal_str.replace(signal_array_size, '', 1)
 
-                        signal_str = re.sub(r"\[(.*)\]", '', signal_str)
-                        print(signal_str)
+                        # signal_str = re.sub(r"\[(.*)\]", '', signal_str)
+                        # print(signal_str)
             #            param_val  = self.get_param_val(signal_str_default, signal_vector_width)                   # извлечение начального значения (для in/out в head их нет)
                         # signal_name = signal_str.split('[', 1)[0]                                                 # обрезание ширины параметра (остаётся только имя)
                         # print(signal_name)
 
                         signal_name = signal_str
                         self.head_signal_nam.append(signal_name)
+                        print(signal_name)
 
             # # поиск наследования значений (инстансов других модулей)
             # def_params = self.head_params_nms + self.code_params_nms
@@ -264,12 +264,14 @@ class SVParParser:
             if  (re.search(r"\[(.*)\]", param_str)):
                 param_ind = (re.search(r"\[(.*)\]", param_str).group(1))
                 param_ind = '[' + param_ind + ']'
-                print(param_ind)
+                flag = 1
             else:
                 param_ind = [1]
+                flag = 0
         else:
             param_ind = [1]
-        return param_ind
+            flag = 0
+        return param_ind, flag
 
     #############################################################################################################################
 
