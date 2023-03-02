@@ -79,8 +79,7 @@ class SVParParser:
         self.head_signal_n_r = []
         self.head_signal_v_w = []
         self.head_signal_nam = []
-        self.head_signal_row = []
-        self.head_signal_col = []
+        self.head_signal_arr = []
 
         self.code_signal_nms = []
         self.code_signal_dms = []
@@ -105,7 +104,7 @@ class SVParParser:
                         print(signal_str)
                         signal_str = re.search(st + '(.*)', signal_str_default).group(1)                            # ищет в строке 'input (бесконечно символов) ,'
                         print(signal_str)
-                        signal_str = re.sub(',', '', re.sub('[ ]', '', signal_str))                                 # удаление пробелов и запятых
+                        signal_str = re.sub(',', '', re.sub('\s', '', signal_str))                                  # удаление пробелов и запятых
                         print(signal_str)
 
                         data_type = ["reg", "wire", "integer", "real", "time", "realtime",                          # типы данных Verilog
@@ -137,13 +136,26 @@ class SVParParser:
                         #     return None
                         # print(signal_name)
 
-                        
-                        signal_vector_width  = self.get_param_ind(signal_str)                                       # извлечение ширины (измерения) параметра
-                        self.head_signal_v_w.append(signal_vector_width) 
+                        signal_vector_width, flag  = self.get_signal_v_w(signal_str)                                # извлечение ширины (измерения) сигнала
+                        self.head_signal_v_w.append(signal_vector_width)
                         print(signal_vector_width)
+
+                        if (flag):
+                            signal_str = signal_str.replace(signal_vector_width, '', 1)
+                        print(signal_str)
+
+                        signal_array_size  = self.get_signal_arr(signal_str)                                        # извлечение размера массива сигнала
+                        self.head_signal_arr.append(signal_array_size)
+                        print(signal_array_size)
+
+                        signal_str = re.sub(r"\[(.*)\]", '', signal_str)
+                        print(signal_str)
             #            param_val  = self.get_param_val(signal_str_default, signal_vector_width)                   # извлечение начального значения (для in/out в head их нет)
-                        signal_name = signal_str.split('[', 1)[0]                                                   # обрезание ширины параметра (остаётся только имя)
-                        print(signal_name)
+                        # signal_name = signal_str.split('[', 1)[0]                                                 # обрезание ширины параметра (остаётся только имя)
+                        # print(signal_name)
+
+                        signal_name = signal_str
+                        self.head_signal_nam.append(signal_name)
 
             # # поиск наследования значений (инстансов других модулей)
             # def_params = self.head_params_nms + self.code_params_nms
@@ -212,7 +224,7 @@ class SVParParser:
 
     #############################################################################################################################
 
-    def get_param_ind(self, param_str: str):
+    def get_signal_v_w(self, param_str: str):
         """
         Parameters
         ----------
@@ -225,9 +237,34 @@ class SVParParser:
             if  (re.search(r"\][^\[](.*)", param_str) and re.search(r"(.*)[^\]]\[", param_str)):
                 param_ind = (re.match(r"\[(.*)\][^\[]", param_str).group(1))
                 param_ind = '[' + param_ind + ']'
-                print(param_ind)
+                flag = 1
             elif(re.search(r"\][^\[](.*)", param_str)):
                 param_ind = (re.match(r"\[(.*)\]", param_str).group(0))
+                flag = 1
+            else:
+                param_ind = [1]
+                flag = 0
+        else:
+            param_ind = [1]
+            flag = 0
+        return param_ind, flag
+
+    #############################################################################################################################
+
+    def get_signal_arr(self, param_str: str):
+        """
+        Parameters
+        ----------
+
+        param_str: str
+            String with parameter definition.
+        """
+
+        if('[' in param_str):
+            if  (re.search(r"\[(.*)\]", param_str)):
+                param_ind = (re.search(r"\[(.*)\]", param_str).group(1))
+                param_ind = '[' + param_ind + ']'
+                print(param_ind)
             else:
                 param_ind = [1]
         else:
@@ -236,29 +273,29 @@ class SVParParser:
 
     #############################################################################################################################
 
-    def convert_param_ind(self, param_ind):
-        """
-        Parameters
-        ----------
+    # def convert_param_ind(self, param_ind):
+    #     """
+    #     Parameters
+    #     ----------
 
-        param_ind: str
-            String with parameter dimensions/indexes.
-        """
+    #     param_ind: str
+    #         String with parameter dimensions/indexes.
+    #     """
 
-        if(":" in param_ind):
-            param_ind = param_ind.split(":", 1)[0]
-            try:
-                param_ind = int(param_ind) + 1
-            except:
-                warnings.warn("Parameter dimension cannot be converted to int.")
-                pass
-        else:
-            try:
-                param_ind = int(param_ind)
-            except:
-                warnings.warn("Parameter dimension cannot be converted to int.")
-                pass
-        return param_ind
+    #     if(":" in param_ind):
+    #         param_ind = param_ind.split(":", 1)[0]
+    #         try:
+    #             param_ind = int(param_ind) + 1
+    #         except:
+    #             warnings.warn("Parameter dimension cannot be converted to int.")
+    #             pass
+    #     else:
+    #         try:
+    #             param_ind = int(param_ind)
+    #         except:
+    #             warnings.warn("Parameter dimension cannot be converted to int.")
+    #             pass
+    #     return param_ind
 
     #############################################################################################################################
 
