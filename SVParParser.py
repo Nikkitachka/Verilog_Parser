@@ -81,13 +81,6 @@ class SVParParser:
         self.head_signal_nam = []
         self.head_signal_arr = []
 
-        self.code_signal_nms = []
-        self.code_signal_dms = []
-        self.code_signal_vls = []
-        self.inhr_signal_nms = []
-        self.inhr_signal_dxs = []
-        self.inhr_signal_rfs = []
-
     #############################################################################################################################
 
     def head_parse(self):
@@ -127,12 +120,6 @@ class SVParParser:
                                 print(signal_num_representation)
                         print(self.head_signal_n_r)
 
-                        # signal_name = (re.search(r'\](.*)\[', (re.search(r'\](.*)\[', signal_str).group(1))).group(1))
-                        # signal_name = (re.search(r'\](.*)\[', (re.search(r'\](.*)\[', signal_str).group(1))).group(1))
-                        # if signal_name is None:
-                        #     return None
-                        # print(signal_name)
-
                         signal_vector_width, flag_v_m  = self.get_signal_v_w(signal_str)                                # извлечение ширины (измерения) сигнала
                         self.head_signal_v_w.append(signal_vector_width)
                         print(signal_vector_width)
@@ -143,84 +130,13 @@ class SVParParser:
                         signal_array_size, flag_arr  = self.get_signal_arr(signal_str)                                        # извлечение размера массива сигнала
                         self.head_signal_arr.append(signal_array_size)
                         print(signal_array_size)
-                        
+
                         if (flag_arr):
                             signal_str = signal_str.replace(signal_array_size, '', 1)
-
-                        # signal_str = re.sub(r"\[(.*)\]", '', signal_str)
-                        # print(signal_str)
-            #            param_val  = self.get_param_val(signal_str_default, signal_vector_width)                   # извлечение начального значения (для in/out в head их нет)
-                        # signal_name = signal_str.split('[', 1)[0]                                                 # обрезание ширины параметра (остаётся только имя)
-                        # print(signal_name)
 
                         signal_name = signal_str
                         self.head_signal_nam.append(signal_name)
                         print(signal_name)
-
-            # # поиск наследования значений (инстансов других модулей)
-            # def_params = self.head_params_nms + self.code_params_nms
-            # with open(self.filepath, "r") as input_file:
-            #     line_idxs = []
-            #     not_inh_synt = ["parameter", ";", "=", "<", ">"]
-            #     for line_idx, line in enumerate(input_file):
-            #         for param in def_params:
-            #             if( re.search(param, line) and (not any(ch in line for ch in not_inh_synt)) and (line_idx not in line_idxs) ):
-            #                 inher_param = re.search(r"\((.*)\)", line)
-            #                 if(inher_param is not None):
-            #                     inher_param = re.search(r"\((.*)\)", line).group(1)
-            #                     inher_param = re.sub('\ ', '', inher_param)
-            #                     inher_param_ref  = re.search(r"\.(.*)\(", line).group(1)
-            #                     inher_param_ref  = re.sub('\ ', '', inher_param_ref)
-            #                     inher_param_ind = self.get_param_ind(inher_param)
-            #                     inher_param_name = inher_param.split('[', 1)[0]
-            #                     if(inher_param_name in def_params):
-            #                         self.inhr_params_nms.append(inher_param_name)
-            #                         self.inhr_params_dxs.append(inher_param_ind)
-            #                         self.inhr_params_rfs.append(inher_param_ref)
-            #                         line_idxs.append(line_idx)
-
-    ###############################################################
-
-    # def parse(self):
-    #     with open(self.filepath, "r") as input_file:
-    #         for line in input_file:
-    #             if( "parameter" in line and "=" in line):
-    #                 param_str  = re.search('(.*)\n', line).group(1)
-    #                 param_name = re.search('parameter(.*)=', param_str).group(1)
-    #                 param_name = re.sub('[ intstring]', '', param_name)
-    #                 param_dim  = self.get_param_ind(param_name)
-    #                 param_val  = self.get_param_val(param_str, param_dim)
-    #                 param_name = param_name.split('[', 1)[0]
-    #                 if(param_str[-1] != ";"):
-    #                     self.head_params_nms.append(param_name)
-    #                     self.head_params_dms.append(param_dim)
-    #                     self.head_params_vls.append(param_val)
-    #                 else:
-    #                     self.code_params_nms.append(param_name)
-    #                     self.code_params_dms.append(param_dim)
-    #                     self.code_params_vls.append(param_val)
-    
-    #     def_params = self.head_params_nms + self.code_params_nms    # поиск наследования значений (инстансов других модулей)
-    #     print(def_params)
-    #     with open(self.filepath, "r") as input_file:
-    #         line_idxs = []
-    #         not_inh_synt = ["parameter", ";", "=", "<", ">"]
-    #         for line_idx, line in enumerate(input_file):
-    #             for param in def_params:
-    #                 if( re.search(param, line) and (not any(ch in line for ch in not_inh_synt)) and (line_idx not in line_idxs) ):
-    #                     inher_param = re.search(r"\((.*)\)", line)
-    #                     if(inher_param is not None):
-    #                         inher_param = re.search(r"\((.*)\)", line).group(1)
-    #                         inher_param = re.sub('\ ', '', inher_param)
-    #                         inher_param_ref  = re.search(r"\.(.*)\(", line).group(1)
-    #                         inher_param_ref  = re.sub('\ ', '', inher_param_ref)
-    #                         inher_param_ind = self.get_param_ind(inher_param)
-    #                         inher_param_name = inher_param.split('[', 1)[0]
-    #                         if(inher_param_name in def_params):
-    #                             self.inhr_params_nms.append(inher_param_name)
-    #                             self.inhr_params_dxs.append(inher_param_ind)
-    #                             self.inhr_params_rfs.append(inher_param_ref)
-    #                             line_idxs.append(line_idx)
 
     #############################################################################################################################
 
@@ -272,67 +188,6 @@ class SVParParser:
             param_ind = [1]
             flag = 0
         return param_ind, flag
-
-    #############################################################################################################################
-
-    # def convert_param_ind(self, param_ind):
-    #     """
-    #     Parameters
-    #     ----------
-
-    #     param_ind: str
-    #         String with parameter dimensions/indexes.
-    #     """
-
-    #     if(":" in param_ind):
-    #         param_ind = param_ind.split(":", 1)[0]
-    #         try:
-    #             param_ind = int(param_ind) + 1
-    #         except:
-    #             warnings.warn("Parameter dimension cannot be converted to int.")
-    #             pass
-    #     else:
-    #         try:
-    #             param_ind = int(param_ind)
-    #         except:
-    #             warnings.warn("Parameter dimension cannot be converted to int.")
-    #             pass
-    #     return param_ind
-
-    #############################################################################################################################
-
-    def get_param_val(self, param_str: str, param_dim: list):
-        """
-        Parameters
-        ----------
-
-        param_str: str
-            String with parameter definition.
-
-        param_ind: str
-            String with parameter dimensions/indexes.
-        """
-        param_val = re.search('=(.*)', param_str).group(1)
-        if(len(param_dim) == 1):
-            if(param_dim[0] == 1):
-                param_val = re.sub('[ ,;]', '', param_val)
-            else:
-                param_val = re.sub('[ \';\{\}]', '', param_val)
-                param_val = param_val.split(',')
-                if(param_val[-1] == ''):
-                    param_val = param_val[:-1]
-        else:
-            param_val = re.sub('[ ;\']', '', param_val)
-            param_val = param_val.split('},')
-            if(param_val[-1] == ''):
-                    param_val = param_val[:-1]
-            for value_part_cnt in range(len(param_val)):
-                param_val[value_part_cnt] = re.sub('[\{\}]', '', param_val[value_part_cnt])
-                param_val[value_part_cnt] = param_val[value_part_cnt].split(',')
-        return param_val
-
-
-
 
     #############################################################################################################################
     # txt file output
