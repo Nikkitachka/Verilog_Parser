@@ -80,6 +80,8 @@ class SVParParser:
         self.head_signal_v_w = []
         self.head_signal_nam = []
         self.head_signal_arr = []
+        self.head_signal_clk = []
+        self.head_signal_rst = []
 
     #############################################################################################################################
 
@@ -192,54 +194,57 @@ class SVParParser:
     #############################################################################################################################
     # txt file output
 
-    # def parse_file_log(self):
-    #     with io.open("parser_log.txt", "w", encoding="utf-16") as f:
-    #         f.write("SVParParser log:\n")
-    #         def_head_params_str = '{} header defined parameter(s) was(were) founded:\n'
-    #         def_code_params_str = '{} code defined parameter(s) was(were) founded:\n'
-    #         inh_params_str      = '{} inherited parameter(s) was(were) founded:\n'
+    def parse_file_log(self):
+        with io.open("parser_log.txt", "w", encoding="utf-16") as f:
+            f.write("SVParParser log:\n")
+            def_head_params_str = '{} header defined signal(s) was(were) founded:\n'
+            # def_code_params_str = '{} code defined parameter(s) was(were) founded:\n'
+            # inh_params_str      = '{} inherited parameter(s) was(were) founded:\n'
 
-    #         ####
+            ####
 
-    #         f.write(def_head_params_str.format(str(len(self.head_params_nms))))
+            f.write(def_head_params_str.format(str(len(self.head_signal_nam))))
 
-    #         data_def_head_params = {'name':           self.head_params_nms,
-    #                                 'dimension':      self.head_params_dms,
-    #                                 ('default' '\n' 'values'): self.head_params_vls}
+            head_signals = {'Signal\ntype'          : self.head_signal_typ,
+                            'Data\ntype'            : self.head_signal_d_t,
+                            'Number\nrepresentation': self.head_signal_n_r,
+                            'Vector width'          : self.head_signal_v_w,
+                            'Name'                  : self.head_signal_nam,
+                            'Array size'            : self.head_signal_arr}
 
-    #         table_def_head_params = pd.DataFrame(data_def_head_params)
-    #         f.write(str(tabulate(table_def_head_params, headers='keys', tablefmt='grid', stralign='center', numalign="center")) + '\n')
+            table_def_head_params = pd.DataFrame(head_signals)
+            f.write(str(tabulate(table_def_head_params, headers='keys', tablefmt='grid', stralign='center', numalign="center")) + '\n')
 
-    #         ####
+            # ####
 
-    #         f.write(def_code_params_str.format(str(len(self.code_params_nms))))
+            # f.write(def_code_params_str.format(str(len(self.code_params_nms))))
 
-    #         data_def_code_params = {'name':           self.code_params_nms,
-    #                                 'dimension':      self.code_params_dms,
-    #                                 'default values': self.code_params_vls}
+            # data_def_code_params = {'name':           self.code_params_nms,
+            #                         'dimension':      self.code_params_dms,
+            #                         'default values': self.code_params_vls}
 
-    #         table_def_code_params = pd.DataFrame(data_def_code_params)
-    #         f.write(str(tabulate(table_def_code_params, headers='keys', tablefmt='grid', stralign='center', numalign="center")) + '\n')
+            # table_def_code_params = pd.DataFrame(data_def_code_params)
+            # f.write(str(tabulate(table_def_code_params, headers='keys', tablefmt='grid', stralign='center', numalign="center")) + '\n')
 
-    #         ####
+            # ####
 
-    #         f.write(inh_params_str.format(str(len(self.inhr_params_nms))))
+            # f.write(inh_params_str.format(str(len(self.inhr_params_nms))))
 
-    #         data_inh_params = {'name':           self.inhr_params_nms,
-    #                            'dimension':      self.inhr_params_rfs,
-    #                            'default values': self.inhr_params_dxs}
+            # data_inh_params = {'name':           self.inhr_params_nms,
+            #                    'dimension':      self.inhr_params_rfs,
+            #                    'default values': self.inhr_params_dxs}
 
-    #         table_inh_params = pd.DataFrame(data_inh_params)
-    #         f.write(str(tabulate(table_inh_params, headers='keys', tablefmt='grid', stralign='center', numalign="center")) + '\n')
+            # table_inh_params = pd.DataFrame(data_inh_params)
+            # f.write(str(tabulate(table_inh_params, headers='keys', tablefmt='grid', stralign='center', numalign="center")) + '\n')
 
-    #         f.close()
-    #         if f.closed:
-    #             print('file is closed')
+            f.close()
+            if f.closed:
+                print('file is closed')
 
-    #     with io.open("parser_log.txt", "r", encoding="utf-16") as f:
-    #         print(f.read())
-    #         f.close()
-    #         if f.closed:
-    #             print('file is closed')
+        with io.open("parser_log.txt", "r", encoding="utf-16") as f:    # вывод данных из файла в терминал
+            print(f.read())
+            f.close()
+            if f.closed:
+                print('file is closed')
 
     #############################################################################################################################
