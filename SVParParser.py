@@ -127,6 +127,20 @@ class SVParParser:
                         signal_name = signal_str
                         self.head_signal_nam.append(signal_name)
 
+                        signal_clk = ["clk", "CLK", "clock"]                                                        # CLK - используется в параметрах,но пока тут пусть побудет
+                        self.head_signal_clk.append('')
+                        for clk in signal_clk:
+                            if (re.search(clk, signal_name)):
+                                self.head_signal_clk[len(self.head_signal_clk)-1] = 'clk'
+                                # self.head_signal_clk.append(clk)
+
+                        signal_rst = ["rst", "RST", "reset"]
+                        self.head_signal_rst.append('')
+                        for rst in signal_rst:
+                            if (re.search(rst, signal_name)):
+                                self.head_signal_rst[len(self.head_signal_rst)-1] = 'rst'
+                                # self.head_signal_rst.append(rst)
+
     #############################################################################################################################
 
     def get_signal_v_w(self, param_str: str):
@@ -193,7 +207,9 @@ class SVParParser:
                             'Number\nrepresentation': self.head_signal_n_r,
                             'Vector width'          : self.head_signal_v_w,
                             'Name'                  : self.head_signal_nam,
-                            'Array size'            : self.head_signal_arr}
+                            'Array size'            : self.head_signal_arr,
+                            'Clock'                 : self.head_signal_clk,
+                            'Reset'                 : self.head_signal_rst}
 
             table_def_head_params = pd.DataFrame(head_signals)
             f.write(str(tabulate(table_def_head_params, headers='keys', tablefmt='grid', stralign='center', numalign="center")) + '\n')
