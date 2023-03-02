@@ -193,6 +193,32 @@ class SVParParser:
         return param_ind, flag
 
     #############################################################################################################################
+
+    def convert_param_ind(self, param_ind):
+        """
+        Parameters
+        ----------
+
+        param_ind: str
+            String with parameter dimensions/indexes.
+        """
+
+        if(":" in param_ind):
+            param_ind = param_ind.split(":", 1)[0]
+            try:
+                param_ind = int(param_ind) + 1
+            except:
+                warnings.warn("Parameter dimension cannot be converted to int.")
+                pass
+        else:
+            try:
+                param_ind = int(param_ind)
+            except:
+                warnings.warn("Parameter dimension cannot be converted to int.")
+                pass
+        return param_ind
+
+    #############################################################################################################################
     # txt file output
 
     def parse_file_log(self):
