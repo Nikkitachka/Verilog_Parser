@@ -114,15 +114,15 @@ class SVParParser:
                                 self.head_signal_n_r[len(self.head_signal_n_r)-1] = signal_num_representation
                                 signal_str = re.search(nr + '(.*)', signal_str).group(1)                            #                           ...
 
-                        signal_vector_width, flag_v_m  = self.get_signal_v_w(signal_str)                            # извлечение ширины (измерения) сигнала
+                        signal_vector_width, signal_vector_width_c, flag_v_m  = self.get_signal_v_w(signal_str)                            # извлечение ширины (измерения) сигнала
                         self.head_signal_v_w.append(signal_vector_width)
                         if (flag_v_m):
-                            signal_str = signal_str.replace(signal_vector_width, '', 1)
+                            signal_str = signal_str.replace(signal_vector_width_c, '', 1)
 
-                        signal_array_size, flag_arr  = self.get_signal_arr(signal_str)                              # извлечение размера массива сигнала
+                        signal_array_size, signal_array_size_c, flag_arr  = self.get_signal_arr(signal_str)                              # извлечение размера массива сигнала
                         self.head_signal_arr.append(signal_array_size)
                         if (flag_arr):
-                            signal_str = signal_str.replace(signal_array_size, '', 1)
+                            signal_str = signal_str.replace(signal_array_size_c, '', 1)
 
                         signal_name = signal_str
                         self.head_signal_nam.append(signal_name)
@@ -151,14 +151,18 @@ class SVParParser:
         param_str: str
             String with parameter definition.
         """
-
+        param_ind_classic = 0
         if('[' in param_str):
             if  (re.search(r"\][^\[](.*)", param_str) and re.search(r"(.*)[^\]]\[", param_str)):
                 param_ind = (re.match(r"\[(.*)\][^\[]", param_str).group(1))
                 param_ind = '[' + param_ind + ']'
+                param_ind_classic = param_ind
+                param_ind = self.convert_param_ind(param_ind)
                 flag = 1
             elif(re.search(r"\][^\[](.*)", param_str)):
                 param_ind = (re.match(r"\[(.*)\]", param_str).group(0))
+                param_ind_classic = param_ind
+                param_ind = self.convert_param_ind(param_ind)
                 flag = 1
             else:
                 param_ind = [1]
@@ -166,7 +170,7 @@ class SVParParser:
         else:
             param_ind = [1]
             flag = 0
-        return param_ind, flag
+        return param_ind, param_ind_classic, flag
 
     #############################################################################################################################
 
@@ -178,11 +182,13 @@ class SVParParser:
         param_str: str
             String with parameter definition.
         """
-
+        param_ind_classic = 0
         if('[' in param_str):
             if  (re.search(r"\[(.*)\]", param_str)):
                 param_ind = (re.search(r"\[(.*)\]", param_str).group(1))
                 param_ind = '[' + param_ind + ']'
+                param_ind_classic = param_ind
+                param_ind = self.convert_param_ind(param_ind)
                 flag = 1
             else:
                 param_ind = [1]
@@ -190,11 +196,11 @@ class SVParParser:
         else:
             param_ind = [1]
             flag = 0
-        return param_ind, flag
+        return param_ind, param_ind_classic, flag
 
     #############################################################################################################################
 
-    def convert_param_ind(self, param_ind):
+    def convert_param_ind(self, param_ind: str):
         """
         Parameters
         ----------
@@ -203,23 +209,50 @@ class SVParParser:
             String with parameter dimensions/indexes.
         """
 
-        if(":" in param_ind):
-            param_ind = param_ind.split(":", 1)[0]
-            try:
-                param_ind = int(param_ind) + 1
-            except:
-                warnings.warn("Parameter dimension cannot be converted to int.")
-                pass
-        else:
-            try:
-                param_ind = int(param_ind)
-            except:
-                warnings.warn("Parameter dimension cannot be converted to int.")
-                pass
-        return param_ind
+        part = []
+
+        width = (param_ind.split("]["))                     # удаление внутренних скобок
+
+        for n in range(len(width)):                         # удаление скобок в начале и конце
+            width[n] = width[n].replace('[', '')
+            width[n] = width[n].replace(']', '')
+
+        for n in range(len(width)):                         # разделение на две части (до и после двоеточия)
+            part.append(width[n].split(":"))
+
+        for n in range(len(part)):
+            if (len(part[n]) == 2):
+                if("+" in part[n][0]):
+                    word = (part[n][0].split("+"))
+                    summ = (1 + int(word[1]) - int(part[n][1]))
+                    if(summ > 0):
+                        word = word[0] + "+" + str(abs(summ))
+                    elif(summ < 0):
+                        word = word[0] + "-" + str(abs(summ))
+                    else:
+                        word = word[0]
+                elif("-" in part[n][0]):
+                    word = (part[n][0].split("-"))
+                    summ = (1 - int(word[1]) - int(part[n][1]))
+                    if(summ > 0):
+                        word = word[0] + "+" + str(abs(summ))
+                    elif(summ < 0):
+                        word = word[0] + "-" + str(abs(summ))
+                    else:
+                        word = word[0]
+                elif(part[n][0].isdigit()):
+                    word = int(part[n][0]) - int(part[n][1]) + 1
+                else:
+                    word = part[n][0] + "+" + str(1 - int(part[n][1]))
+                part[n] = word
+            elif (len(part[n]) == 1):
+                if(part[n][0].isdigit()):
+                    word = int(part[n][0])
+                    part[n] = word
+        return part
 
     #############################################################################################################################
-    # txt file output
+    # txt file and terminal output
 
     def parse_file_log(self):
         with io.open("parser_log.txt", "w", encoding="utf-16") as f:
