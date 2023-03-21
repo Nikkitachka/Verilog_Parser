@@ -20,8 +20,6 @@ class SVParParser:
         self.head_signal_clk = []
         self.head_signal_rst = []
 
-    #############################################################################################################################
-
     def head_parse(self):
         with open(self.filepath, "r") as input_file:
             for line in input_file:
@@ -79,45 +77,45 @@ class SVParParser:
     # extracting the width (measurement) of the signal
     def get_signal_v_w(self, param_str: str):
 
-        param_ind_classic = 0
+        param_ind_c = 0
         if('[' in param_str):
             if  (re.search(r"\][^\[](.*)", param_str) and re.search(r"(.*)[^\]]\[", param_str)):
-                param_ind = (re.match(r"\[(.*)\][^\[]", param_str).group(1))
-                param_ind = '[' + param_ind + ']'
-                param_ind_classic = param_ind
-                param_ind = self.convert_param_ind(param_ind)
-                flag = 1
+                param_ind   = (re.match(r"\[(.*)\][^\[]", param_str).group(1))
+                param_ind   = '[' + param_ind + ']'
+                param_ind_c = param_ind
+                param_ind   = self.convert_param_ind(param_ind)
+                flag        = 1
             elif(re.search(r"\][^\[](.*)", param_str)):
-                param_ind = (re.match(r"\[(.*)\]", param_str).group(0))
-                param_ind_classic = param_ind
-                param_ind = self.convert_param_ind(param_ind)
-                flag = 1
+                param_ind   = (re.match(r"\[(.*)\]", param_str).group(0))
+                param_ind_c = param_ind
+                param_ind   = self.convert_param_ind(param_ind)
+                flag        = 1
             else:
                 param_ind = [1]
-                flag = 0
+                flag      = 0
         else:
             param_ind = [1]
-            flag = 0
-        return param_ind, param_ind_classic, flag
+            flag      = 0
+        return param_ind, param_ind_c, flag
 
     # finding array dimension
     def get_signal_arr(self, param_str: str):
 
-        param_ind_classic = 0
+        param_ind_c = 0
         if('[' in param_str):
             if  (re.search(r"\[(.*)\]", param_str)):
-                param_ind = (re.search(r"\[(.*)\]", param_str).group(1))
-                param_ind = '[' + param_ind + ']'
-                param_ind_classic = param_ind
-                param_ind = self.convert_param_ind(param_ind)
-                flag = 1
+                param_ind   = (re.search(r"\[(.*)\]", param_str).group(1))
+                param_ind   = '[' + param_ind + ']'
+                param_ind_c = param_ind
+                param_ind   = self.convert_param_ind(param_ind)
+                flag        = 1
             else:
                 param_ind = [1]
-                flag = 0
+                flag      = 0
         else:
             param_ind = [1]
-            flag = 0
-        return param_ind, param_ind_classic, flag
+            flag      = 0
+        return param_ind, param_ind_c, flag
 
     # width conversion
     def convert_param_ind(self, param_ind: str):
@@ -159,7 +157,7 @@ class SVParParser:
                 part[n] = word
             elif (len(part[n]) == 1):
                 if(part[n][0].isdigit()):
-                    word = int(part[n][0])
+                    word    = int(part[n][0])
                     part[n] = word
         return part
 
