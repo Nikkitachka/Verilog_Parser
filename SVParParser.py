@@ -25,38 +25,38 @@ class SVParParser:
     def head_parse(self):
         with open(self.filepath, "r") as input_file:
             for line in input_file:
-                signal_type = ["input",  "output"]                                                                  # типы сигналов (входные / выходные)
+                signal_type = ["input",  "output"]
                 for st in signal_type:
                     if( st in line):
                         self.head_signal_typ.append(st)
-                        signal_str_default = re.search('(.*)\n', line).group(1)                                     # захват всей строки в signal_str_default
-                        signal_str         = signal_str_default                                                     # дублирование signal_str_default в signal_str
-                        signal_str         = re.search(st + '(.*)', signal_str_default).group(1)                    # ищет в строке 'input/output' + (бесконечно символов)' и удаляет (input/output)
-                        signal_str         = re.sub(',', '', re.sub('\s', '', signal_str))                          # удаление пробелов (\s - соответствует любому символу пробела ~ [ \t\n\r\f\v]) и запятых
+                        signal_str_default = re.search('(.*)\n', line).group(1)
+                        signal_str         = signal_str_default
+                        signal_str         = re.search(st + '(.*)', signal_str_default).group(1)
+                        signal_str         = re.sub(',', '', re.sub('\s', '', signal_str))
 
-                        data_type = ["reg", "wire", "integer", "real", "time", "realtime",                          # типы данных Verilog
-                                     "logic", "bit", "byte", "shortint", "int", "longint", "shortreal"]             # типы данных SystemVerilog
-                        self.head_signal_d_t.append('')                                                             # поиск типа данных сигнала ...
+                        data_type = ["reg", "wire", "integer", "real", "time", "realtime",
+                                     "logic", "bit", "byte", "shortint", "int", "longint", "shortreal"]
+                        self.head_signal_d_t.append('')
                         for dt in data_type:
                             if (re.search(dt, line)):
                                 signal_data_type = dt
                                 self.head_signal_d_t[len(self.head_signal_d_t)-1] = signal_data_type
-                                signal_str = re.search(dt + '(.*)', signal_str).group(1)                            #                           ...
+                                signal_str = re.search(dt + '(.*)', signal_str).group(1)
 
-                        num_representation = ["signed", "unsigned"]                                                 # представление чисел (знак / беззнак)
-                        self.head_signal_n_r.append('')                                                             # поиск представления чисел ...
+                        num_representation = ["signed", "unsigned"]
+                        self.head_signal_n_r.append('')
                         for nr in num_representation:
                             if (re.search(nr, line)):
                                 signal_num_representation = nr
                                 self.head_signal_n_r[len(self.head_signal_n_r)-1] = signal_num_representation
-                                signal_str = re.search(nr + '(.*)', signal_str).group(1)                            #                           ...
+                                signal_str = re.search(nr + '(.*)', signal_str).group(1)
 
-                        signal_vector_width, signal_vector_width_c, flag_v_m  = self.get_signal_v_w(signal_str)     # извлечение ширины (измерения) сигнала
+                        signal_vector_width, signal_vector_width_c, flag_v_m  = self.get_signal_v_w(signal_str)
                         self.head_signal_v_w.append(signal_vector_width)
                         if (flag_v_m):
                             signal_str = signal_str.replace(signal_vector_width_c, '', 1)
 
-                        signal_array_size, signal_array_size_c, flag_arr  = self.get_signal_arr(signal_str)         # извлечение размера массива сигнала
+                        signal_array_size, signal_array_size_c, flag_arr  = self.get_signal_arr(signal_str)
                         self.head_signal_arr.append(signal_array_size)
                         if (flag_arr):
                             signal_str = signal_str.replace(signal_array_size_c, '', 1)
@@ -64,7 +64,7 @@ class SVParParser:
                         signal_name = signal_str
                         self.head_signal_nam.append(signal_name)
 
-                        signal_clk = ["clk", "CLK", "clock"]                                                        # CLK - используется в параметрах,но пока тут пусть побудет
+                        signal_clk = ["clk", "CLK", "clock"]
                         self.head_signal_clk.append('')
                         for clk in signal_clk:
                             if (re.search(clk, signal_name)):
@@ -123,13 +123,13 @@ class SVParParser:
     def convert_param_ind(self, param_ind: str):
 
         part = []
-        width = (param_ind.split("]["))                     # удаление внутренних скобок
+        width = (param_ind.split("]["))
 
-        for n in range(len(width)):                         # удаление скобок в начале и конце
+        for n in range(len(width)):
             width[n] = width[n].replace('[', '')
             width[n] = width[n].replace(']', '')
 
-        for n in range(len(width)):                         # разделение на две части (до и после двоеточия)
+        for n in range(len(width)):
             part.append(width[n].split(":"))
 
         for n in range(len(part)):
@@ -188,7 +188,7 @@ class SVParParser:
             if f.closed:
                 print('file is closed')
 
-        with io.open("parser_log.txt", "r", encoding="utf-16") as f:    # вывод данных из файла в терминал
+        with io.open("parser_log.txt", "r", encoding="utf-16") as f:
             print(f.read())
             f.close()
             if f.closed:
