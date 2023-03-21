@@ -8,70 +8,7 @@ from   prettytable import PrettyTable
 
 
 class SVParParser:
-    """
-    SVParParser class
-    
-    Class for parsing Verilog/SystemVerilog parameters in source file.
-
-    Obviously, there is some codestyle restrictions.
-    Each parameter definition or inheritence must be on the new line.
-    Ihneritation must be via dot.
-
-    Examples:
-
-    module <modulename># (
-        parameter PAR1     = 1,
-        parameter PAR2 [2] = '{2,2}
-    )
-    (
-        ...
-    )
-        ...
-        parameter PAR3        = 3;
-        parameter PAR4 [2][2] = '{'{4,4}, '{4,4}};
-        parameter PAR5 [1:0]  = '{5,5};
-
-        <nested_modulename> #(
-            .PAR2 ( PAR3        ),
-            .PAR1 ( PAR1        ),
-            .PAR3 ( PAR4 [1][1] ),
-            .PAR5 ( PAR5 [2]    )
-        );
-        ...
-
-    endmodule
-
-    Methods
-    -------
-
-    __init__(self, filepath)
-        Class initializer.
-
-    parse(self)
-        Method for parameters parsing.
-
-    get_param_ind(self, param_str)
-        Method for getting parameter dimensions/indexes from string
-        with its definition.
-
-    convert_param_ind(self, param_ind)
-        Method for converting string parameter dimensions/indexes to int.
-
-    parse_log(self):
-        Provides information about parsed parameters.
-        This method can be used after parse() class method.
-    """
-
-
     def __init__(self, filepath: str):
-        """
-        Parameters
-        ----------
-
-        filepath: str
-            Parsed module path.
-            Example: C:\module.sv
-        """
 
         self.filepath = filepath
         self.head_signal_typ = []
@@ -114,12 +51,12 @@ class SVParParser:
                                 self.head_signal_n_r[len(self.head_signal_n_r)-1] = signal_num_representation
                                 signal_str = re.search(nr + '(.*)', signal_str).group(1)                            #                           ...
 
-                        signal_vector_width, signal_vector_width_c, flag_v_m  = self.get_signal_v_w(signal_str)                            # извлечение ширины (измерения) сигнала
+                        signal_vector_width, signal_vector_width_c, flag_v_m  = self.get_signal_v_w(signal_str)     # извлечение ширины (измерения) сигнала
                         self.head_signal_v_w.append(signal_vector_width)
                         if (flag_v_m):
                             signal_str = signal_str.replace(signal_vector_width_c, '', 1)
 
-                        signal_array_size, signal_array_size_c, flag_arr  = self.get_signal_arr(signal_str)                              # извлечение размера массива сигнала
+                        signal_array_size, signal_array_size_c, flag_arr  = self.get_signal_arr(signal_str)         # извлечение размера массива сигнала
                         self.head_signal_arr.append(signal_array_size)
                         if (flag_arr):
                             signal_str = signal_str.replace(signal_array_size_c, '', 1)
@@ -132,25 +69,16 @@ class SVParParser:
                         for clk in signal_clk:
                             if (re.search(clk, signal_name)):
                                 self.head_signal_clk[len(self.head_signal_clk)-1] = 'clk'
-                                # self.head_signal_clk.append(clk)
 
                         signal_rst = ["rst", "RST", "reset"]
                         self.head_signal_rst.append('')
                         for rst in signal_rst:
                             if (re.search(rst, signal_name)):
                                 self.head_signal_rst[len(self.head_signal_rst)-1] = 'rst'
-                                # self.head_signal_rst.append(rst)
 
-    #############################################################################################################################
-
+    # extracting the width (measurement) of the signal
     def get_signal_v_w(self, param_str: str):
-        """
-        Parameters
-        ----------
 
-        param_str: str
-            String with parameter definition.
-        """
         param_ind_classic = 0
         if('[' in param_str):
             if  (re.search(r"\][^\[](.*)", param_str) and re.search(r"(.*)[^\]]\[", param_str)):
@@ -172,16 +100,9 @@ class SVParParser:
             flag = 0
         return param_ind, param_ind_classic, flag
 
-    #############################################################################################################################
-
+    # finding array dimension
     def get_signal_arr(self, param_str: str):
-        """
-        Parameters
-        ----------
 
-        param_str: str
-            String with parameter definition.
-        """
         param_ind_classic = 0
         if('[' in param_str):
             if  (re.search(r"\[(.*)\]", param_str)):
@@ -198,19 +119,10 @@ class SVParParser:
             flag = 0
         return param_ind, param_ind_classic, flag
 
-    #############################################################################################################################
-
+    # width conversion
     def convert_param_ind(self, param_ind: str):
-        """
-        Parameters
-        ----------
-
-        param_ind: str
-            String with parameter dimensions/indexes.
-        """
 
         part = []
-
         width = (param_ind.split("]["))                     # удаление внутренних скобок
 
         for n in range(len(width)):                         # удаление скобок в начале и конце
@@ -251,10 +163,9 @@ class SVParParser:
                     part[n] = word
         return part
 
-    #############################################################################################################################
     # txt file and terminal output
-
     def parse_file_log(self):
+
         with io.open("parser_log.txt", "w", encoding="utf-16") as f:
             f.write("SVParParser log:\n")
             def_head_params_str = '{} header defined signal(s) was(were) founded:\n'
@@ -282,5 +193,3 @@ class SVParParser:
             f.close()
             if f.closed:
                 print('file is closed')
-
-    #############################################################################################################################
